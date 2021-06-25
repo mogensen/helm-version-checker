@@ -1,0 +1,15 @@
+apiVersion: v1
+entries:
+  helm-version-checker:
+  - apiVersion: v2
+    appVersion: v0.0.1
+    created: "2021-06-25T09:14:09.102587919Z"
+    description: Helm version monitoring utility for watching updated and deprecated
+      helm releases and reporting the result as metrics.
+    digest: f2198e6c7fef3bf97dd185373540feec639751e5dfc4df291eb4fdd819c94357
+    name: helm-version-checker
+    type: application
+    urls:
+    - https://github.com/mogensen/helm-version-checker/releases/download/helm-version-checker-helm-chart-0.0.1/helm-version-checker-0.0.1.tgz
+    version: 0.0.1
+generated: "2021-06-25T09:14:09.102603719Z"
