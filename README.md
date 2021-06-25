@@ -11,6 +11,11 @@ This tool is heavily inspired by the awesome tools:
  - [version-checker by jetstack](https://github.com/jetstack/version-checker/).
  - [cert-checker by mogensen](https://github.com/mogensen/cert-checker/).
 
+## Heavy lifting supplied by `helm-whatup`
+
+ The actual Helm version checking is done by `helm-whatup`, originally developed by [bacongobbler](https://github.com/bacongobbler/helm-whatup/)
+ and now maintained by [fabmation-gmbh](https://github.com/fabmation-gmbh/helm-whatup)
+
 ## Table of contents
 
 - [helm-version-checker](#helm-version-checker)
