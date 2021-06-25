@@ -42,6 +42,7 @@ func TestController_Run_StopsWhenContextIsCanceled(t *testing.T) {
 					t.Errorf("Controller.Run() error = %v", err)
 				}
 				done <- true
+				c.Shutdown()
 			}()
 
 			select {
@@ -62,5 +63,12 @@ type mockProber struct {
 
 func (h mockProber) Probe() (*models.WhatupResult, error) {
 	time.Sleep(time.Millisecond * 100)
-	return &models.WhatupResult{}, nil
+	return &models.WhatupResult{
+		Releases: []models.HelmRelease{
+			{
+				Name:      "releaseName",
+				Namespace: "default",
+			},
+		},
+	}, nil
 }

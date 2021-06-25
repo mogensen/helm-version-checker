@@ -124,20 +124,20 @@ func (m *Metrics) AddHelmReleaseInfo(rel models.HelmRelease) {
 }
 
 // RemoveHelmReleaseInfo removed an existing helm release record
-func (m *Metrics) RemoveHelmReleaseInfo(dns string) {
+func (m *Metrics) RemoveHelmReleaseInfo(id string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	item, ok := m.releaseCache[dns]
+	item, ok := m.releaseCache[id]
 	if !ok {
-		m.log.Debugf("Did not find %s in cache", dns)
+		m.log.Debugf("Did not find %s in cache", id)
 		return
 	}
 
 	m.releaseIsLatest.Delete(m.buildLabelsLatest(item))
 	m.releaseIsDeprecated.Delete(m.buildLabelsLatest(item))
 
-	delete(m.releaseCache, dns)
+	delete(m.releaseCache, id)
 }
 
 func (m *Metrics) buildLabelsLatest(cer models.HelmRelease) prometheus.Labels {
