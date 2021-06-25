@@ -32,7 +32,7 @@ func TestController_Run_StopsWhenContextIsCanceled(t *testing.T) {
 
 			log := logrus.NewEntry(logrus.New())
 			c := New(tt.interval, "0.0.0.0:0", log)
-			c.prober = mockProber{}
+			c.helm = mockProber{}
 
 			timeout := time.After(2 * time.Second)
 			done := make(chan bool)
@@ -57,11 +57,13 @@ func TestController_Run_StopsWhenContextIsCanceled(t *testing.T) {
 
 // mockProber used in unit tests, to decouple tests from
 // actual helm and kubectl invocations.
-type mockProber struct {
-	log *logrus.Entry
+type mockProber struct{}
+
+func (h mockProber) init() error {
+	return nil
 }
 
-func (h mockProber) Probe() (*models.WhatupResult, error) {
+func (h mockProber) probe() (*models.WhatupResult, error) {
 	time.Sleep(time.Millisecond * 100)
 	return &models.WhatupResult{
 		Releases: []models.HelmRelease{

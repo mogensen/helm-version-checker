@@ -46,7 +46,11 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-
+          volumeMounts:
+            - mountPath: /home/helm-version-checker/.cache/helm/repository/
+              name: repository-cache-volume
+            - mountPath: /home/helm-version-checker/.config/helm/
+              name: repository-config-volume
         {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
             {{- omit .Values.livenessProbe "enabled" | toYaml | nindent 12 }}
@@ -69,3 +73,8 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        - name: repository-cache-volume
+          emptyDir: {}
+        - name: repository-config-volume
+          emptyDir: {}

@@ -17,7 +17,7 @@ type Controller struct {
 	metrics      *metrics.Metrics
 	helmReleases map[string]models.HelmRelease
 	interval     time.Duration
-	prober       prober
+	helm         helmService
 }
 
 // New returns a new configured instance of the Controller struct
@@ -32,7 +32,7 @@ func New(interval time.Duration, servingAddress string, log *logrus.Entry) *Cont
 		metrics:      metrics,
 		interval:     interval,
 		log:          log,
-		prober: &helmProber{
+		helm: &helmServiceInst{
 			log: log,
 		},
 	}
@@ -50,6 +50,13 @@ func (c *Controller) HelmRels() []models.HelmRelease {
 
 // Run starts the main loop that will call ProbeAll regularly.
 func (c *Controller) Run(ctx context.Context) error {
+
+	// First init helm repoes
+	err := c.init(ctx)
+	if err != nil {
+		return err
+	}
+
 	// Start by probing all certificates before starting the ticker
 	c.probeAll(ctx)
 
@@ -79,7 +86,7 @@ func (c *Controller) Run(ctx context.Context) error {
 func (c *Controller) probeAll(ctx context.Context) {
 	c.log.Debug("Probing all")
 
-	res, err := c.prober.Probe()
+	res, err := c.helm.probe()
 	if err != nil {
 		// If we get an error, we just ignore this probing
 		return
@@ -92,6 +99,11 @@ func (c *Controller) probeAll(ctx context.Context) {
 		c.helmReleases[id] = rel
 		c.metrics.AddHelmReleaseInfo(rel)
 	}
+}
+
+func (c *Controller) init(ctx context.Context) error {
+	c.log.Debug("Initial helm repo add")
+	return c.helm.init()
 }
 
 // Shutdown closes the metrics server gracefully
