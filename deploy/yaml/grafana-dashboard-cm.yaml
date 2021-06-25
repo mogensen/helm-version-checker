@@ -179,91 +179,7 @@ data:
                 ]
               }
             },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Is Latest"
-                },
-                "properties": [
-                  {
-                    "id": "mappings",
-                    "value": [
-                      {
-                        "options": {
-                          "0": {
-                            "text": "No"
-                          }
-                        },
-                        "type": "value"
-                      },
-                      {
-                        "options": {
-                          "from": 1,
-                          "result": {
-                            "text": "Yes"
-                          },
-                          "to": 999999999
-                        },
-                        "type": "range"
-                      }
-                    ]
-                  },
-                  {
-                    "id": "custom.align",
-                    "value": "left"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "not_after"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 225
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "not_before"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 234
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "issuer"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 395
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "cert_error"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 640
-                  }
-                ]
-              }
-            ]
+            "overrides": []
           },
           "gridPos": {
             "h": 9,
@@ -277,7 +193,7 @@ data:
             "sortBy": [
               {
                 "desc": true,
-                "displayName": "not_after"
+                "displayName": "Release Name"
               }
             ]
           },
@@ -319,15 +235,11 @@ data:
                 },
                 "renameByName": {
                   "Value": "Is Valid",
-                  "cert_error": "",
                   "current_version": "Current Version",
-                  "dns": "",
                   "exported_namespace": "Namespace",
-                  "image": "Image",
                   "installed_version": "Installed Version",
                   "latest_version": "Latest Version",
-                  "name": "Release Name",
-                  "not_after": ""
+                  "name": "Release Name"
                 }
               }
             }
@@ -363,91 +275,7 @@ data:
                 ]
               }
             },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Is Latest"
-                },
-                "properties": [
-                  {
-                    "id": "mappings",
-                    "value": [
-                      {
-                        "options": {
-                          "0": {
-                            "text": "No"
-                          }
-                        },
-                        "type": "value"
-                      },
-                      {
-                        "options": {
-                          "from": 1,
-                          "result": {
-                            "text": "Yes"
-                          },
-                          "to": 999999999
-                        },
-                        "type": "range"
-                      }
-                    ]
-                  },
-                  {
-                    "id": "custom.align",
-                    "value": "left"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "not_after"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 225
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "not_before"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 234
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "issuer"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 395
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "cert_error"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 640
-                  }
-                ]
-              }
-            ]
+            "overrides": []
           },
           "gridPos": {
             "h": 9,
@@ -461,7 +289,7 @@ data:
             "sortBy": [
               {
                 "desc": true,
-                "displayName": "not_after"
+                "displayName": "Release Name"
               }
             ]
           },
@@ -503,15 +331,11 @@ data:
                 },
                 "renameByName": {
                   "Value": "Is Valid",
-                  "cert_error": "",
                   "current_version": "Current Version",
-                  "dns": "",
                   "exported_namespace": "Namespace",
-                  "image": "Image",
                   "installed_version": "Installed Version",
                   "latest_version": "Latest Version",
-                  "name": "Release Name",
-                  "not_after": ""
+                  "name": "Release Name"
                 }
               }
             }
@@ -546,5 +370,5 @@ data:
       "timezone": "",
       "title": "Helm Version Checker",
       "uid": "helm-version-checker",
-      "version": 3
+      "version": 6
     }
