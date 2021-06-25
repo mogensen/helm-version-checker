@@ -1,0 +1,21 @@
+prometheus:
+  ingress:
+    enabled: enabled
+    pathType: ImplementationSpecific
+    hosts:
+      - prometheus.localtest.me
+
+grafana:
+  ingress:
+    enabled: enabled
+    hosts:
+      - grafana.localtest.me
+
+  sidecar:
+    dashboards:
+      searchNamespace: ALL
+
+  grafana.ini:
+    auth.anonymous:
+      enabled: true
+      org_role: Admin

@@ -1,0 +1,16 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: helm-version-checker
+  labels:
+    app.kubernetes.io/name: helm-version-checker
+    app.kubernetes.io/instance: helm-version-checker
+    app.kubernetes.io/version: "v0.0.1"
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: helm-version-checker
+  endpoints:
+  - port: metrics-http

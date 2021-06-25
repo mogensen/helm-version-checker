@@ -1,0 +1,12 @@
+{{define "release-list"}}
+   
+        <ul>
+        	{{ range $key, $namespace := . }}
+            <h3>{{ $key }}</h3>
+                <hr />
+                {{- range $index, $release := $namespace }}
+                    {{ template "release" $release }}
+                {{ end }}
+            {{ end }}
+        </ul>
+{{- end}}

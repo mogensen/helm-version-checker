@@ -1,0 +1,170 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: helm-version-checker
+  labels:
+    app.kubernetes.io/name: helm-version-checker
+    app.kubernetes.io/instance: helm-version-checker
+    app.kubernetes.io/version: "v0.0.1"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: helm-version-checker-secrets
+  labels:
+    app.kubernetes.io/name: helm-version-checker
+    app.kubernetes.io/instance: helm-version-checker
+    app.kubernetes.io/version: "v0.0.1"
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  verbs:
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: helm-version-checker-view-binding
+  labels:
+    app.kubernetes.io/name: helm-version-checker
+    app.kubernetes.io/instance: helm-version-checker
+    app.kubernetes.io/version: "v0.0.1"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view
+subjects:
+- kind: ServiceAccount
+  name: helm-version-checker
+  namespace: helm-version-checker
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: helm-version-checker-secrets-binding
+  labels:
+    app.kubernetes.io/name: helm-version-checker
+    app.kubernetes.io/instance: helm-version-checker
+    app.kubernetes.io/version: "v0.0.1"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: helm-version-checker-secrets
+subjects:
+- kind: ServiceAccount
+  name: helm-version-checker
+  namespace: helm-version-checker
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helm-version-checker
+  labels:
+    app.kubernetes.io/name: helm-version-checker
+    app.kubernetes.io/instance: helm-version-checker
+    app.kubernetes.io/version: "v0.0.1"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8081
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 8080
+      targetPort: metrics-http
+      protocol: TCP
+      name: metrics-http
+  selector:
+    app.kubernetes.io/name: helm-version-checker
+    app.kubernetes.io/instance: helm-version-checker
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helm-version-checker
+  labels:
+    app.kubernetes.io/name: helm-version-checker
+    app.kubernetes.io/instance: helm-version-checker
+    app.kubernetes.io/version: "v0.0.1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: helm-version-checker
+      app.kubernetes.io/instance: helm-version-checker
+  template:
+    metadata:
+      annotations:
+        enable.helm-version-checker.io/helm-version-checker: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      labels:
+        app.kubernetes.io/name: helm-version-checker
+        app.kubernetes.io/instance: helm-version-checker
+    spec:
+      serviceAccountName: helm-version-checker
+      securityContext:
+        fsGroup: 35992
+      containers:
+        - name: helm-version-checker
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 35992
+          image: "mogensen/helm-version-checker:v0.0.1"
+          command: ["/app/helm-version-checker"]
+          env:
+            - value: debug
+              name: LOG_LEVEL
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: metrics-http
+              containerPort: 8080
+              protocol: TCP
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+          resources:
+            {}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8081
+            initialDelaySeconds: 2
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8081
+            initialDelaySeconds: 2
+            periodSeconds: 3
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: helm-version-checker
+  labels:
+    app.kubernetes.io/name: helm-version-checker
+    app.kubernetes.io/instance: helm-version-checker
+    app.kubernetes.io/version: "v0.0.1"
+spec:
+  rules:
+    - host: "helm-version-checker.localtest.me"
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: helm-version-checker
+                port:
+                  number: 8081

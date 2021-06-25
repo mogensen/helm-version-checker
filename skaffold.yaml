@@ -1,0 +1,25 @@
+apiVersion: skaffold/v2beta15
+kind: Config
+build:
+  artifacts:
+  - image: helm-version-checker
+deploy:
+  helm:
+    releases:
+    - name: helm-version-checker
+      chartPath: deploy/charts/helm-version-checker
+      artifactOverrides:
+        image: helm-version-checker
+
+      # Sets image.tag and image.repository seperatly
+      imageStrategy:
+        helm: {}
+
+      # Use kube-prometheus-stack
+      setValues:
+        serviceMonitor.enabled: true
+        serviceMonitor.additionalLabels.release: prometheus
+        grafanaDashboard.enabled: true
+        ingress.enabled: true
+        ingress.hosts.0.host: helm-version-checker.localtest.me
+        ingress.hosts.0.paths[0].path: /

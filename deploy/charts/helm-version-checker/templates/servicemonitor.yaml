@@ -1,0 +1,17 @@
+{{- if or  .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "helm-version-checker.fullname" . }}
+  labels:
+    {{- include "helm-version-checker.labels" . | nindent 4 }}
+    {{- if .Values.serviceMonitor.additionalLabels }}
+    {{- .Values.serviceMonitor.additionalLabels | toYaml | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "helm-version-checker.fullname" . }}
+  endpoints:
+  - port: metrics-http
+{{- end }}

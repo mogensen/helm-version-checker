@@ -1,0 +1,12 @@
+{{- if or  .Values.grafanaDashboard.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "helm-version-checker.fullname" . }}-grafana-dashboard
+  labels:
+    grafana_dashboard: "1"
+    {{- include "helm-version-checker.labels" . | nindent 4 }}
+data:
+  helm-version-checker.json: |-
+  {{- .Files.Get "dashboards/helm-version-checker.json" | nindent 4 }}
+{{- end }}

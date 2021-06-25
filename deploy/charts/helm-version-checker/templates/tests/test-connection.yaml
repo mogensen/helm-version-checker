@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "helm-version-checker.fullname" . }}-test-connection"
+  labels:
+    {{- include "helm-version-checker.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "helm-version-checker.fullname" . }}:{{ .Values.service.port }}/metrics']
+  restartPolicy: Never

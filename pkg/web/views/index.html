@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="color-scheme" content="dark light">
+    <meta http-equiv="refresh" content="30">
+    <title>helm-version-checker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
+    <script>
+        {{ template "js". }}
+    </script>
+    <style>
+        {{ template "css" . }}
+    </style>
+</head>
+<body {{ if .OutdatedReleases }} class="bad" {{ end }} >
+
+    <div class="container">
+        <button id="switch" onclick="toggleTheme()">Dark mode</button>
+    </div>
+    <a class="github-fork-ribbon right-bottom fixed" href="https://github.com/mogensen/helm-version-checker" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
+    <div class='container'>
+        <h1>helm-version-checker</h1>
+        <span class="lastupdate">Last update: {{ timeNow }}</span>
+
+        <div class="panel-small">
+            <div class="failed-bg">{{ len .OutdatedReleases }} Outdated</div>
+            <div class="warning-bg">{{ len .DeprecatedReleases }} Deprecated</div>
+            {{/* <div class="success-bg">{{ len .GoodReleases }} All Goods</div> */}}
+        </div>
+
+        {{ if .OutdatedReleases }}
+        <h2>Outdated</h2>
+        {{ template "release-list" .OutdatedReleases }}
+        {{ end }}
+        {{ if .DeprecatedReleases }}
+        <h2>deprecated</h2>
+        {{ template "release-list" .DeprecatedReleases }}
+        {{ end }}
+        
+        {{/* {{ if .GoodReleases }}
+        <h2>All Goods</h2>
+        {{ template "release-list" .GoodReleases }}
+        {{ end }} */}}
+
+    </div>
+    <div class="footer">
+        <ul class="footer">
+            <li><a id="metrics-link">Metrics</a></li>
+            <li><a href="https://github.com/mogensen/helm-version-checker/issues">Issues</a></li>
+            <li><a href="https://github.com/mogensen/helm-version-checker">Github</a></li>
+        </ul>
+    </div>
+</body>
+</html>
