@@ -16,24 +16,13 @@ var views embed.FS
 func templateHTML(releases []models.HelmRelease, w io.Writer) error {
 
 	sum := internalSummery{
-		OutdatedReleases:    make(map[string][]uiHelmRelease),
-		DeprecatedReleases:  make(map[string][]uiHelmRelease),
-		MissingRepoReleases: make(map[string][]uiHelmRelease),
-		GoodReleases:        make(map[string][]uiHelmRelease),
+		OutdatedReleases:    make(map[string][]models.HelmRelease),
+		DeprecatedReleases:  make(map[string][]models.HelmRelease),
+		MissingRepoReleases: make(map[string][]models.HelmRelease),
+		GoodReleases:        make(map[string][]models.HelmRelease),
 	}
 
-	for _, c := range releases {
-		uiC := uiHelmRelease{
-			Name:             c.Name,
-			Namespace:        c.Namespace,
-			Deprecated:       c.Deprecated,
-			InstalledVersion: c.InstalledVersion,
-			LatestVersion:    c.LatestVersion,
-			NewestRepo:       c.NewestRepo,
-			Outdated:         c.Outdated,
-			Chart:            c.Chart,
-		}
-
+	for _, uiC := range releases {
 		if uiC.Deprecated {
 			sum.DeprecatedReleases[uiC.Namespace] = append(sum.DeprecatedReleases[uiC.Namespace], uiC)
 		} else if uiC.NewestRepo == "---" {

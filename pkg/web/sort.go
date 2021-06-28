@@ -1,7 +1,9 @@
 package web
 
-// ByName sorts uiHelmRelease'es by Repository and then image name
-type ByName []uiHelmRelease
+import "github.com/mogensen/helm-version-checker/pkg/models"
+
+// ByName sorts HelmRelease'es by Repository and then image name
+type ByName []models.HelmRelease
 
 func (a ByName) Len() int { return len(a) }
 func (a ByName) Less(i, j int) bool {
