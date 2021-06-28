@@ -16,9 +16,10 @@ var views embed.FS
 func templateHTML(releases []models.HelmRelease, w io.Writer) error {
 
 	sum := internalSummery{
-		OutdatedReleases:   make(map[string][]uiHelmRelease),
-		DeprecatedReleases: make(map[string][]uiHelmRelease),
-		GoodReleases:       make(map[string][]uiHelmRelease),
+		OutdatedReleases:    make(map[string][]uiHelmRelease),
+		DeprecatedReleases:  make(map[string][]uiHelmRelease),
+		MissingRepoReleases: make(map[string][]uiHelmRelease),
+		GoodReleases:        make(map[string][]uiHelmRelease),
 	}
 
 	for _, c := range releases {
@@ -28,11 +29,15 @@ func templateHTML(releases []models.HelmRelease, w io.Writer) error {
 			Deprecated:       c.Deprecated,
 			InstalledVersion: c.InstalledVersion,
 			LatestVersion:    c.LatestVersion,
-			Outdated:         c.InstalledVersion != c.LatestVersion,
+			NewestRepo:       c.NewestRepo,
+			Outdated:         c.Outdated,
+			Chart:            c.Chart,
 		}
 
 		if uiC.Deprecated {
 			sum.DeprecatedReleases[uiC.Namespace] = append(sum.DeprecatedReleases[uiC.Namespace], uiC)
+		} else if uiC.NewestRepo == "---" {
+			sum.MissingRepoReleases[uiC.Namespace] = append(sum.MissingRepoReleases[uiC.Namespace], uiC)
 		} else if uiC.Outdated {
 			sum.OutdatedReleases[uiC.Namespace] = append(sum.OutdatedReleases[uiC.Namespace], uiC)
 		} else {
@@ -43,6 +48,11 @@ func templateHTML(releases []models.HelmRelease, w io.Writer) error {
 	for i, v := range sum.DeprecatedReleases {
 		sort.Sort(ByName(v))
 		sum.DeprecatedReleases[i] = v
+	}
+
+	for i, v := range sum.MissingRepoReleases {
+		sort.Sort(ByName(v))
+		sum.MissingRepoReleases[i] = v
 	}
 
 	for i, v := range sum.OutdatedReleases {

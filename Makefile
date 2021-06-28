@@ -12,7 +12,7 @@ test: ## test helm-version-checker
 	go test ./...
 
 dev: ## live reload development
-	gin --build ./cmd --path . --appPort 8081 --all --immediate --bin tmp/helm-version-checker run
+	LOG_LEVEL=debug gin --build ./cmd --path . --appPort 8081 --all --immediate --bin tmp/helm-version-checker run
 
 build: ## build helm-version-checker
 	mkdir -p $(BINDIR)

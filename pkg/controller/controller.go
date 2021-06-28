@@ -86,19 +86,41 @@ func (c *Controller) Run(ctx context.Context) error {
 func (c *Controller) probeAll(ctx context.Context) {
 	c.log.Debug("Probing all")
 
-	res, err := c.helm.probe()
+	releases := map[string]models.HelmRelease{}
+
+	helmList, err := c.helm.list()
 	if err != nil {
 		// If we get an error, we just ignore this probing
 		return
 	}
 
-	for _, rel := range res.Releases {
-		id := fmt.Sprintf("%s/%s", rel.Namespace, rel.Name)
-		c.log.Debugf("Found %s", id)
-
-		c.helmReleases[id] = rel
-		c.metrics.AddHelmReleaseInfo(rel)
+	for _, rel := range helmList {
+		c.log.Debugf("Found helm release: %s", rel.Id)
+		releases[rel.Id] = *rel
 	}
+
+	helmOutdated, err := c.helm.probe()
+	if err != nil {
+		// If we get an error, we just ignore this probing
+		return
+	}
+
+	for _, rel := range helmOutdated {
+		c.log.Debugf("Found outdated release: %s", rel.Id)
+		releases[rel.Id] = *rel
+		c.metrics.AddHelmReleaseInfo(*rel)
+	}
+
+	// Cleanup releases, that has meen uninstalled
+	for id, _ := range c.helmReleases {
+		if _, ok := releases[id]; !ok {
+			c.log.Debugf("Removing old helm release, not found in new releases: %s", id)
+			c.metrics.RemoveHelmReleaseInfo(id)
+		}
+	}
+
+	c.helmReleases = releases
+	c.log.Debug("Probing all - Done")
 }
 
 func (c *Controller) init(ctx context.Context) error {

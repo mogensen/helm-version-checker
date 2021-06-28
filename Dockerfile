@@ -12,7 +12,7 @@ RUN mv /tmp/linux-amd64/helm /usr/local/bin/helm && rm -rf /tmp/linux-amd64
 RUN chmod +x /usr/local/bin/helm
 
 
-RUN helm plugin install https://github.com/fabmation-gmbh/helm-whatup
+RUN helm plugin install https://github.com/mogensen/helm-whatup
 
 # Dependencies
 WORKDIR /build

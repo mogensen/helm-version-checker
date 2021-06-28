@@ -1,12 +1,29 @@
 {{define "release-list"}}
-   
-        <ul>
-        	{{ range $key, $namespace := . }}
-            <h3>{{ $key }}</h3>
-                <hr />
-                {{- range $index, $release := $namespace }}
-                    {{ template "release" $release }}
-                {{ end }}
+<table class="u-full-width">
+	<colgroup>
+		<col style="width:25%">
+		<col style="width:25%">
+		<col style="width:20%">
+		<col style="width:15%">
+		<col style="width:15%">
+	</colgroup>
+	<thead>
+		<tr>
+			<th>Release</th>
+			<th>Repository</th>
+			<th>Chart</th>
+			<th>Installed</th>
+			<th>Latest</th>
+		</tr>
+	</thead>
+	<tbody>
+        {{ range $key, $namespace := . }}
+
+            {{- range $index, $release := $namespace }}
+                {{ template "release" $release }}
             {{ end }}
-        </ul>
+        {{ end }}
+
+	</tbody>
+</table>
 {{- end}}

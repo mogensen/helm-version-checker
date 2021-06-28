@@ -7,6 +7,8 @@
     <meta http-equiv="refresh" content="30">
     <title>helm-version-checker</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css">
     <script>
         {{ template "js". }}
     </script>
@@ -14,35 +16,41 @@
         {{ template "css" . }}
     </style>
 </head>
-<body {{ if .OutdatedReleases }} class="bad" {{ end }} >
 
+<body {{ if .OutdatedReleases }} class="bad" {{ end }} >
+    <a class="github-fork-ribbon right-bottom fixed" href="https://github.com/mogensen/helm-version-checker" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
     <div class="container">
         <button id="switch" onclick="toggleTheme()">Dark mode</button>
-    </div>
-    <a class="github-fork-ribbon right-bottom fixed" href="https://github.com/mogensen/helm-version-checker" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
-    <div class='container'>
+
         <h1>helm-version-checker</h1>
         <span class="lastupdate">Last update: {{ timeNow }}</span>
 
         <div class="panel-small">
-            <div class="failed-bg">{{ len .OutdatedReleases }} Outdated</div>
-            <div class="warning-bg">{{ len .DeprecatedReleases }} Deprecated</div>
-            {{/* <div class="success-bg">{{ len .GoodReleases }} All Goods</div> */}}
+            <div class="failed-bg">{{ count .OutdatedReleases }} Outdated</div>
+            <div class="warning-bg">{{ count .DeprecatedReleases }} Deprecated</div>
+            <div class="warning-bg">{{ count .MissingRepoReleases }} Missing Repo</div>
+            <div class="success-bg">{{ count .GoodReleases }} Up to Date</div>
         </div>
 
         {{ if .OutdatedReleases }}
         <h2>Outdated</h2>
         {{ template "release-list" .OutdatedReleases }}
         {{ end }}
+
         {{ if .DeprecatedReleases }}
-        <h2>deprecated</h2>
+        <h2>Deprecated</h2>
         {{ template "release-list" .DeprecatedReleases }}
         {{ end }}
-        
-        {{/* {{ if .GoodReleases }}
-        <h2>All Goods</h2>
+
+        {{ if .MissingRepoReleases }}
+        <h2>Missing Repository Config</h2>
+        {{ template "release-list" .MissingRepoReleases }}
+        {{ end }}
+
+        {{ if .GoodReleases }}
+        <h2>Up to Date</h2>
         {{ template "release-list" .GoodReleases }}
-        {{ end }} */}}
+        {{ end }}
 
     </div>
     <div class="footer">

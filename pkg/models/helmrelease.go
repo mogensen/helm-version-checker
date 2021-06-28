@@ -4,6 +4,7 @@ import "time"
 
 // HelmRelease stores info about helm releases
 type HelmRelease struct {
+	Id               string    `json:"id"`
 	Name             string    `json:"name"`
 	Namespace        string    `json:"namespace"`
 	InstalledVersion string    `json:"installed_version"`
@@ -12,10 +13,6 @@ type HelmRelease struct {
 	Chart            string    `json:"chart"`
 	NewestRepo       string    `json:"newest_repo"`
 	Updated          time.Time `json:"updated"`
+	Outdated         bool      `json:"outdated"`
 	Deprecated       bool      `json:"deprecated"`
-}
-
-// WhatupResult is used for unmarshalling results from `hellm whatup`
-type WhatupResult struct {
-	Releases []HelmRelease `json:"releases"`
 }

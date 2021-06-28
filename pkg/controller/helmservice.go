@@ -2,7 +2,9 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"os/exec"
+	"strings"
 
 	"github.com/mogensen/helm-version-checker/pkg/models"
 	"github.com/sirupsen/logrus"
@@ -10,7 +12,8 @@ import (
 
 type helmService interface {
 	init() error
-	probe() (*models.WhatupResult, error)
+	probe() ([]*models.HelmRelease, error)
+	list() ([]*models.HelmRelease, error)
 }
 
 type helmServiceInst struct {
@@ -39,23 +42,83 @@ func (h helmServiceInst) init() error {
 	return nil
 }
 
-func (h helmServiceInst) probe() (*models.WhatupResult, error) {
-	prg := "helm"
+func (h helmServiceInst) list() ([]*models.HelmRelease, error) {
 
-	cmd := exec.Command(prg, "whatup", "-A", "-a", "--ignore-deprecation=false", "--ignore-repo=false", "-o", "json")
+	cmd := exec.Command("helm", "ls", "-A", "-a", "-o", "json")
 	stdout, err := cmd.Output()
-	h.log.Debugf("json: %s", string(stdout))
+	h.log.Tracef("json: %s", string(stdout))
 
 	if err != nil {
 		h.log.Errorf("Error probing: %v", err.Error())
 		return nil, err
 	}
 
-	var res models.WhatupResult
-	err = json.Unmarshal(stdout, &res)
+	var cliRes []*release
+	err = json.Unmarshal(stdout, &cliRes)
 	if err != nil {
 		h.log.Errorf("Error unmarshaling json: %v", err.Error())
 		return nil, err
 	}
-	return &res, nil
+
+	var res []*models.HelmRelease
+	for _, rel := range cliRes {
+
+		installedVersion := rel.Chart[strings.LastIndex(rel.Chart, "-")+1:]
+		chart := rel.Chart[:strings.LastIndex(rel.Chart, "-")]
+
+		hRel := models.HelmRelease{
+			Id:               fmt.Sprintf("%s/%s", rel.Namespace, rel.Name),
+			Name:             rel.Name,
+			Namespace:        rel.Namespace,
+			Chart:            chart,
+			InstalledVersion: installedVersion,
+			AppVersion:       rel.AppVersion,
+			NewestRepo:       "---",
+			LatestVersion:    "---",
+			Outdated:         false,
+		}
+
+		res = append(res, &hRel)
+	}
+
+	return res, nil
+}
+
+func (h helmServiceInst) probe() ([]*models.HelmRelease, error) {
+
+	cmd := exec.Command("helm", "whatup", "-A", "-a", "--ignore-deprecation=false", "--ignore-repo=false", "-o", "json")
+	stdout, err := cmd.Output()
+	h.log.Tracef("json: %s", string(stdout))
+
+	if err != nil {
+		h.log.Errorf("Error probing: %v", err.Error())
+		return nil, err
+	}
+
+	var cliRes whatupResult
+	err = json.Unmarshal(stdout, &cliRes)
+	if err != nil {
+		h.log.Errorf("Error unmarshaling json: %v", err.Error())
+		return nil, err
+	}
+
+	var res []*models.HelmRelease
+	for _, rel := range cliRes.Releases {
+
+		hRel := models.HelmRelease{
+			Id:               fmt.Sprintf("%s/%s", rel.Namespace, rel.Name),
+			Name:             rel.Name,
+			Namespace:        rel.Namespace,
+			Chart:            rel.Chart,
+			InstalledVersion: rel.InstalledVersion,
+			AppVersion:       rel.AppVersion,
+			LatestVersion:    rel.LatestVersion,
+			NewestRepo:       rel.NewestRepo,
+			Outdated:         rel.InstalledVersion != rel.LatestVersion,
+		}
+
+		res = append(res, &hRel)
+	}
+
+	return res, nil
 }

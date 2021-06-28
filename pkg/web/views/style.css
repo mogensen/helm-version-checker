@@ -30,9 +30,7 @@
     float: right;
     color: var(--font-color);
     background: var(--color-secondary);
-    padding: 10px 20px;
     border: 0;
-    border-radius: 5px;
 }
 
 ul.footer {
@@ -119,7 +117,7 @@ li {
     flex-grow: 1;
     padding: 10px 0px;
     font-weight: 600;
-    font-size: 2em;
+    font-size: 1.5em;
     margin: 10px;
     text-align: center;
 }

@@ -1,7 +1,9 @@
 {{define "release"}}
-
-    <b>{{ .Namespace }}/{{ .Name }}</b><br />
-    Installed:  {{ .InstalledVersion }}<br />
-    Latest:  {{ .LatestVersion }}<br />
-
+<tr>
+    <td><b>{{ .Namespace }}/{{ .Name }}</b></td>
+    <td>  {{ .NewestRepo }}</td>
+    <td>  {{ .Chart }}</td>
+    <td>  {{ .InstalledVersion }}</td>
+    <td>  {{ .LatestVersion }}</td>
+</tr>
 {{- end}}

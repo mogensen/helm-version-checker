@@ -16,7 +16,8 @@ type uiHelmRelease struct {
 }
 
 type internalSummery struct {
-	OutdatedReleases   map[string][]uiHelmRelease
-	DeprecatedReleases map[string][]uiHelmRelease
-	GoodReleases       map[string][]uiHelmRelease
+	OutdatedReleases    map[string][]uiHelmRelease
+	DeprecatedReleases  map[string][]uiHelmRelease
+	MissingRepoReleases map[string][]uiHelmRelease
+	GoodReleases        map[string][]uiHelmRelease
 }
