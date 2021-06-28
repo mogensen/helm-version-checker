@@ -8,18 +8,47 @@ import (
 	"github.com/mogensen/helm-version-checker/pkg/metrics"
 	"github.com/mogensen/helm-version-checker/pkg/models"
 	"github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 )
 
+func TestController_probeAll_canAddFromBothHelmAndWhatsUp(t *testing.T) {
+	c := testController()
+	assert.Empty(t, c.helmReleases)
+
+	c.probeAll(context.Background())
+
+	assert.EqualValues(t, 2, len(c.helmReleases))
+}
+
+func TestController_probeAll_canRemoveUninstalledHelmReleases(t *testing.T) {
+	c := testController()
+	c.helmReleases["default/removedRelease"] = models.HelmRelease{
+		Id:               "default/removedRelease",
+		Name:             "releaseName",
+		Namespace:        "default",
+		InstalledVersion: "1.0.0",
+		LatestVersion:    "2.0.0",
+	}
+
+	assert.EqualValues(t, 1, len(c.HelmRels()))
+
+	c.probeAll(context.Background())
+
+	assert.EqualValues(t, 2, len(c.HelmRels()))
+}
+
+func testController() *Controller {
+	log := logrus.NewEntry(logrus.New())
+	return &Controller{
+		log:          log,
+		metrics:      metrics.New(log),
+		helmReleases: make(map[string]models.HelmRelease),
+		interval:     time.Microsecond,
+		helm:         mockProber{},
+	}
+}
+
 func TestController_Run_StopsWhenContextIsCanceled(t *testing.T) {
-	type fields struct {
-		log          *logrus.Entry
-		metrics      *metrics.Metrics
-		helmReleases []models.HelmRelease
-		interval     time.Duration
-	}
-	type args struct {
-		ctx context.Context
-	}
 	tests := []struct {
 		interval time.Duration
 	}{
@@ -63,14 +92,27 @@ func (h mockProber) init() error {
 	return nil
 }
 
-func (h mockProber) probe() (*models.WhatupResult, error) {
+func (h mockProber) list() ([]*models.HelmRelease, error) {
+	return []*models.HelmRelease{
+		{
+			Id:               "default/upToDateRelease",
+			Name:             "upToDateRelease",
+			Namespace:        "default",
+			InstalledVersion: "1.0.0",
+			LatestVersion:    "---",
+		},
+	}, nil
+}
+
+func (h mockProber) probe() ([]*models.HelmRelease, error) {
 	time.Sleep(time.Millisecond * 100)
-	return &models.WhatupResult{
-		Releases: []models.HelmRelease{
-			{
-				Name:      "releaseName",
-				Namespace: "default",
-			},
+	return []*models.HelmRelease{
+		{
+			Id:               "default/releaseName",
+			Name:             "releaseName",
+			Namespace:        "default",
+			InstalledVersion: "1.0.0",
+			LatestVersion:    "2.0.0",
 		},
 	}, nil
 }

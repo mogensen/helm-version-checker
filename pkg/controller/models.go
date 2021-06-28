@@ -2,7 +2,7 @@ package controller
 
 import "github.com/mogensen/helm-version-checker/pkg/models"
 
-// whatupResult is used for unmarshalling results from `hellm whatup`
+// whatupResult is used for unmarshalling results from `helm whatup`
 type whatupResult struct {
 	Releases []models.HelmRelease `json:"releases"`
 }
