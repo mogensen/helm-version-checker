@@ -21,7 +21,7 @@ type Controller struct {
 }
 
 // New returns a new configured instance of the Controller struct
-func New(interval time.Duration, servingAddress string, log *logrus.Entry) *Controller {
+func New(interval time.Duration, servingAddress string, log *logrus.Entry, repoes []models.Repo) *Controller {
 	metrics := metrics.New(log)
 	if err := metrics.Run(servingAddress); err != nil {
 		log.Errorf("failed to start metrics server: %s", err)
@@ -33,7 +33,8 @@ func New(interval time.Duration, servingAddress string, log *logrus.Entry) *Cont
 		interval:     interval,
 		log:          log,
 		helm: &helmServiceInst{
-			log: log,
+			repoes: repoes,
+			log:    log,
 		},
 	}
 }

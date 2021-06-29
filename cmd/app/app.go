@@ -30,6 +30,7 @@ func NewCommand(ctx context.Context) *cobra.Command {
 			if err := env.Parse(&cfg); err != nil {
 				fmt.Printf("%+v\n", err)
 			}
+			cfg.Repos = getRepoesFromEnv()
 
 			nlog := logrus.New()
 			nlog.SetOutput(os.Stdout)
@@ -53,7 +54,7 @@ func NewCommand(ctx context.Context) *cobra.Command {
 			// Metrics
 
 			metricsAddress := fmt.Sprintf("%s:%d", "0.0.0.0", cfg.MetricsPort)
-			c := controller.New(time.Minute, metricsAddress, log)
+			c := controller.New(time.Minute, metricsAddress, log, cfg.Repos)
 
 			go func() {
 				<-ctx.Done()

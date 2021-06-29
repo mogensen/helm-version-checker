@@ -17,21 +17,14 @@ type helmService interface {
 }
 
 type helmServiceInst struct {
-	log *logrus.Entry
+	log    *logrus.Entry
+	repoes []models.Repo
 }
 
 func (h helmServiceInst) init() error {
 
-	repoes := make(map[string]string)
-
-	// TODO Make config!
-	repoes["fairwinds-stable"] = "https://charts.fairwinds.com/stable"
-	repoes["stable"] = "https://charts.helm.sh/stable"
-	repoes["cert-checker"] = "https://mogensen.github.io/cert-checker"
-	repoes["prometheus-community"] = "https://prometheus-community.github.io/helm-charts"
-
-	for repoName, repoUrl := range repoes {
-		cmd := exec.Command("helm", "repo", "add", repoName, repoUrl)
+	for _, repo := range h.repoes {
+		cmd := exec.Command("helm", "repo", "add", repo.Name, repo.Url)
 		stdout, err := cmd.Output()
 		h.log.Debugf("helm repo add output: %s", string(stdout))
 		if err != nil {

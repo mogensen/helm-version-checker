@@ -16,3 +16,8 @@ type HelmRelease struct {
 	Outdated         bool      `json:"outdated"`
 	Deprecated       bool      `json:"deprecated"`
 }
+
+type Repo struct {
+	Name string
+	Url  string
+}
